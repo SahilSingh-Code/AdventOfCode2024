@@ -9,6 +9,7 @@
 
 // Dependencies
 #include "Stopwatch.h"
+#include "PrintUtilities.h"
 #include <iostream>
 #include <chrono>
 
@@ -100,5 +101,5 @@ void StopWatch::printTime(const std::string & message, TimeGranularity granulari
 	}
 
 	// Empty line for spacing
-	std::cout << std::endl;
+	PrintUtilities::emptyLine();
 }
