@@ -21,7 +21,6 @@ int main()
 	// Run all of the solutions and return
 	Day1::runSolutions();
 
-	// The input on the console for this function is:
 	//  Example inputs are :
 	//  3, 4, 2, 1, 3, 3
 	//	4, 3, 5, 3, 9, 3
@@ -31,18 +30,22 @@ int main()
 	//	Distance using quick sort : 11
 	//
 	//	Distance using std::sort : 2367773
-	//	Time elapsed using std::sort runtime : 63 us
+	//	Time elapsed using std::sort runtime : 76 us
 	//
 	//	Distance using a naive sort : 2367773
-	//	Time elapsed using a naive sort runtime : 438 us
+	//	Time elapsed using a naive sort runtime : 446 us
 	//
 	//	Distance using quick sort : 2367773
 	//	Time elapsed using quick sort runtime : 63 us
 	//
-	// The correct answer for my input is found using
-	// all 3 methods, and we see that quick sort is just
-	// as fast as using std::sort, albeit harder to implement.
-	// Just use std::sort, I'm only demonstrating here
+	//	Simialrity Score using Naive Traverse : 21271939
+	//	Time elapsed using naive traverse runtime : 58 us
+	//
+	//	Simialrity Score using Traverse and Remove : 21271939
+	//	Time elapsed using traverse and remove runtime : 416 us
+	//
+	//	Simialrity Score using Single Traverse : 21271939
+	//	Time elapsed using Single Traverse runtime : 64 us
 
 	return 0;
 }

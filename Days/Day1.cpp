@@ -1,3 +1,4 @@
+#include "Day1.h"
 // ----------------------------------------------------
 // Author: Sahil Singh
 // Date: Febraury 21, 2025
@@ -30,6 +31,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <limits>
+#include <unordered_map>
 
 namespace Day1 
 {
@@ -77,6 +79,8 @@ namespace Day1
         // Real Input
         // --------------
 
+        // -- Part 1 --
+        
         // Let's read off the actual input we want to solve,
         // And calculate the results, along with timing information
         // The real inputs are huge, so let's not print them
@@ -109,6 +113,42 @@ namespace Day1
         if (distanceUsingQuickSort == -1) return; // error check
         PrintUtilities::printMessageAndNumber("Distance using quick sort", distanceUsingQuickSort);
         stopWatch.printTime("Time elapsed using quick sort");
+
+        // CONCLUSION
+        // For the distance calculation, using std::sort is the best approach as it is a well documented
+        // and optimized function. Quick sort works at comparable speeds, but is harder to implement and
+        // understand.
+
+        // -- Part 2 --
+
+        // Let's solve the problem using the naive expensive approach
+        stopWatch.start();
+        int64_t similarityScore = findListSimilarityUsingNaiveTraverse(twoLists);
+        stopWatch.stop();
+        if (similarityScore == -1) return; // error check
+        PrintUtilities::printMessageAndNumber("Simialrity Score using Naive Traverse", similarityScore);
+        stopWatch.printTime("Time elapsed using naive traverse");
+
+        // Let's solve the problem by using a traverse and remove method
+        stopWatch.start();
+        similarityScore = findListSimilarityUsingTraverseAndRemove(twoLists);
+        stopWatch.stop();
+        if (similarityScore == -1) return; // error check
+        PrintUtilities::printMessageAndNumber("Simialrity Score using Traverse and Remove", similarityScore);
+        stopWatch.printTime("Time elapsed using traverse and remove");
+
+        // Let's solve the problem by using the single traverse method
+        stopWatch.start();
+        similarityScore = findListSimilarityUsingSingleTraverse(twoLists);
+        stopWatch.stop();
+        if (similarityScore == -1) return; // error check
+        PrintUtilities::printMessageAndNumber("Simialrity Score using Single Traverse", similarityScore);
+        stopWatch.printTime("Time elapsed using Single Traverse");
+
+        // CONCLUSION
+        // For the similarity score, the single traversal has the best complexity order of n vs n^2 for the
+        // single traversal, but the overhead of creating the hash map involved does not make it faster for
+        // the size of the lists provided in the advent of code challenges
     }
 
     // Calculate the result using std's built in
@@ -250,6 +290,126 @@ namespace Day1
         }
 
         return distance;
+    }
+
+    int64_t findListSimilarityUsingNaiveTraverse(Lists lists)
+    {
+        // Read off the two lists
+        std::vector<int>& v1 = lists.first;
+        std::vector<int>& v2 = lists.second;
+
+        // Loop over all the entries in list 1, find all matching entries in list 2, and increment the cost
+        int64_t totalCost = 0;
+        for (const auto& entry : v1)
+        {
+            int nCount = 0;
+            for (const auto& entry2 : v2)
+            {
+                if (entry == entry2)
+                {
+                    nCount++;
+                }
+            }
+            totalCost += static_cast<int64_t>(entry) * static_cast<int64_t>(nCount);
+        }
+
+        return totalCost;
+    }
+
+    // For a given list, find the similarity score
+    int64_t findListSimilarityUsingTraverseAndRemove(Lists lists)
+    {
+        // Read off the two lists
+        std::vector<int>& v1 = lists.first;
+        std::vector<int>& v2 = lists.second;
+
+        // We will be keeping a map to track whether a certain value in list 1 has already been checked,
+        // and how many entries there were in the second list
+        // We want to remember, for a given number, how many we've found so far, and how many were in the the other list
+        // Key: number in the left list
+        // value: a pair, where first value is the count in the left list, and second is the count in the right list
+        std::unordered_map<int64_t, std::pair<int64_t, int64_t>> trackMap;
+
+        while (v1.size() > 0)
+        {
+            // Let's look at the first number, and remember what it is
+            int64_t n = static_cast<int64_t>(v1[0]);
+
+            // Now, let's remove it from the vector so we don't look at it again
+            std::swap(v1[0], v1.back());
+            v1.pop_back();
+
+            // Is this entry already in the map? If so, all we need to do is increment the count
+            if (trackMap.find(n) != trackMap.end())
+            {
+                trackMap[n].first++;
+            }
+            else
+            {
+                // Find how many of this entry are in the second list, and remove them from the second list
+                int64_t nCount = 0;
+                for (int i = 0; i < v2.size(); ) { // Do not increment the variable in the for loop header
+                    if (v2[i] == n) {
+                        nCount++;
+                        std::swap(v2[i], v2.back());
+                        v2.pop_back();
+                        // Don't increment i here either, if we swapped, we stay where we are and look again
+                    }
+                    else {
+                        // Now we are safe to move on from this entry and look at the next one
+                        ++i;
+                    }
+                }
+
+                // Now, we have the count of how many n's were in the second list, and those n's have been removed so we
+                // don't look at them again. We can now create the entry in the map
+                std::pair<int64_t, int64_t> result(1,nCount);
+                trackMap[n] = result;
+            }
+        }
+
+        // Now we have all of the relevant counts, let's compute the total cost
+        int64_t totalCost = 0;
+        for (const auto& entry : trackMap)
+        {
+            totalCost += entry.first * entry.second.first * entry.second.second;
+        }
+
+        return totalCost;
+    }
+
+    // Find the similarity score by only traversing the list once
+    int64_t findListSimilarityUsingSingleTraverse(Lists lists)
+    {
+        // Read off the two lists
+        std::vector<int>& v1 = lists.first;
+        std::vector<int>& v2 = lists.second;
+
+        // Let's generate a hash map of the counts of variables in the second list
+        std::unordered_map<int, int> list2Counts;
+        for (const auto& entry : v2)
+        {
+            if (list2Counts.find(entry) != list2Counts.end())
+            {
+                list2Counts[entry]++;
+            }
+            else
+            {
+                list2Counts[entry] = 1;
+            }
+        }
+
+        // Now we loop over the first list, and compute the total cost
+        int64_t totalCost = 0;
+        for (const auto& entry : v1)
+        {
+            if (list2Counts.find(entry) != list2Counts.end())
+            {
+                totalCost += static_cast<int64_t>(entry) * static_cast<int64_t>(list2Counts[entry]);
+            }
+        }
+
+        return totalCost;
     }
 
 

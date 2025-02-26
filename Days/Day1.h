@@ -7,6 +7,8 @@
 // and compare the timings and see which is best
 // ----------------------------------------------------
 
+#pragma once
+
 // Dependencies
 #include <vector>
 #include <string>
@@ -61,4 +63,20 @@ namespace Day1
 	// value is placed in it's correct location.
 	// The order is n log n
 	void quickSort(std::vector<int>& v, int start, int end);
+
+	// This function finds the similarity score of the two lists
+	// It does so by looping over the lists and removing analyzed entries
+	// By doing this, we reduce the number of times we loop over the list
+	// I'm not sure about the order of this algorithm
+	int64_t findListSimilarityUsingTraverseAndRemove(Lists lists);
+
+	// This function finds the similarity score using the naive approach of looping multiple times
+	// The order is O(n^2)
+	int64_t findListSimilarityUsingNaiveTraverse(Lists lists);
+
+	// This function finds the similarity score by traversing each list only once
+	// It does so by constructing a hash map of the second list counts first, and then constructs
+	// the total cost by looping over the first list once.
+	// The order is O(n) + cost of hash map construction
+	int64_t findListSimilarityUsingSingleTraverse(Lists lists);
 }
