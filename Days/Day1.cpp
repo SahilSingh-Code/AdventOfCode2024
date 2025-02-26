@@ -84,7 +84,7 @@ namespace Day1
         // Let's read off the actual input we want to solve,
         // And calculate the results, along with timing information
         // The real inputs are huge, so let's not print them
-        inputFile = inputsPath + "/Day1/Input.txt";
+        inputFile = inputsPath + "/Day1/InputExpanded.txt";
         twoLists = readTwoLists(inputFile);
 
         // Create a stopwatch
